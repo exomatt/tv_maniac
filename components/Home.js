@@ -1,5 +1,7 @@
 import React, { useState } from "react";
-import { StyleSheet, View, Text, Button } from "react-native";
+import { StyleSheet, View, Text } from "react-native";
+import { Button } from "react-native-elements";
+import Icon from "react-native-vector-icons/FontAwesome";
 
 export const Home = ({ navigation }) => {
   const [season, onChangeSeason] = useState("");
@@ -8,10 +10,19 @@ export const Home = ({ navigation }) => {
   return (
     <View>
       <Button
-        title="Press me"
-        onPress={() =>
-          navigation.navigate("Search Show")
-        }
+        icon={<Icon name="search" size={15} color="white" />}
+        title=" Search"
+        onPress={() => navigation.navigate("Search Show")}
+      />
+      <Button
+        icon={<Icon name="heart" size={15} color="white" />}
+        title=" Favorite"
+        onPress={() => navigation.navigate("Search Show")}
+      />
+      <Button
+        icon={<Icon name="tv" size={15} color="white" />}
+        title=" Tonight in TV"
+        onPress={() => navigation.navigate("Search Show")}
       />
     </View>
   );

@@ -1,18 +1,38 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { StyleSheet, View, ActivityIndicator, ScrollView } from "react-native";
 import { Text, Button, Image } from "react-native-elements";
 import { Linking } from "expo";
 
-const ShowDetails = ({ route, navigation }) => {
-  const { show } = route.params;
+const Episode = ({ route }) => {
+  const { episodePath, name } = route.params;
+  const [data, setData] = useState("");
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+  async function fetchData() {
+    console.log(episodePath.href);
+    const res = await fetch(episodePath.href);
+    res
+      .json()
+      .then((res) => {
+        let obj = JSON.parse(JSON.stringify(res));
+        console.log(obj);
+        setData(obj);
+      })
+      .catch((err) => {
+        // setErrors(true);
+        // setIsLoading(false);
+        console.log("Error", err);
+      });
+  }
+  
   return (
     <ScrollView
       contentInsetAdjustmentBehavior="automatic"
       style={styles.container}
     >
-      <Text style={styles.text}>{show.name}</Text>
-      <Text style={styles.textSmall}>{show.premiered}</Text>
-      <Text style={styles.textSmall}>Rating: {show.rating.average}</Text>
+      <Text style={styles.text}>{name}</Text>
       <View
         style={{
           justifyContent: "center",
@@ -20,7 +40,7 @@ const ShowDetails = ({ route, navigation }) => {
         }}
       >
         <Image
-          source={show.image && show.image.medium && { uri: show.image.medium }}
+          source={data.image && data.image.medium && { uri: data.image.medium }}
           style={{
             width: 250,
             height: 250,
@@ -30,44 +50,14 @@ const ShowDetails = ({ route, navigation }) => {
         />
       </View>
 
+      <Text style={styles.textSmall}>Name: {data.name}</Text>
+      <Text style={styles.textSmall}>Season: {data.season}</Text>
+      <Text style={styles.textSmall}>Episode: {data.number}</Text>
+      <Text style={styles.textSmall}>Airdate: {data.airdate}</Text>
       <Text style={styles.textSmall}>Summary: </Text>
       <Text style={styles.textSummary}>
-        {show.summary ? show.summary.replace(/<[^>]*>?/gm, "") : ""}
+        {data.summary ? data.summary.replace(/<[^>]*>?/gm, "") : ""}
       </Text>
-      <Text style={styles.textSmall}>Status: {show.status}</Text>
-      <Text style={styles.textSmall}>Producer: {show.network.name}</Text>
-      {show._links.previousepisode ? (
-        <Button
-          title="Last episode"
-          onPress={() => {
-            navigation.navigate("Episode", {
-              episodePath: show._links.previousepisode,
-              name: show.name,
-            });
-          }}
-        />
-      ) : (
-        ""
-      )}
-      {show.officialSite ? (
-        <Button
-          title="Official page"
-          onPress={() => {
-            Linking.openURL(show.officialSite);
-          }}
-        />
-      ) : (
-        ""
-      )}
-      <Button
-        title="Cast"
-        onPress={() => {
-          navigation.navigate("Cast", {
-            id: show.id,
-            name: show.name,
-          });
-        }}
-      />
     </ScrollView>
   );
 };
@@ -103,7 +93,7 @@ const styles = StyleSheet.create({
     marginTop: 0,
     fontSize: 20,
     textAlign: "center",
-    textAlign:"justify"
+    textAlign: "justify",
   },
 });
-export default ShowDetails;
+export default Episode;
