@@ -1,31 +1,42 @@
-import React from "react";
-import { createStackNavigator } from "@react-navigation/stack";
-import NavigationContainer from "@react-navigation/native/src/NavigationContainer";
-import Home from "./components/Home";
-import { StyleSheet, Text, View } from "react-native";
-import SearchShow from "./components/SearchShow";
-import ShowDetails from "./components/ShowDetails";
-import Episode from "./components/Episode";
-import Cast from "./components/Cast";
-import Person from "./components/Person";
+import React, { useState, useEffect, createContext } from "react";
 
-const Stack = createStackNavigator();
+import { StyleSheet, Text, View } from "react-native";
+import * as firebase from "firebase";
+import { firebaseConfig } from "./constants/ApiKeys";
+import AuthStack from "./nav-stacks/authstack";
+import NormalStack from "./nav-stacks/normalstack";
+
+export const AuthContext = createContext(null);
+
 export default function App() {
-  return (
-    <NavigationContainer>
-      <Stack.Navigator initialRouteName="Home">
-        <Stack.Screen name="TV Maniac" component={Home} />
-        <Stack.Screen
-          name="Search Show"
-          component={SearchShow}
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen name="Show Details" component={ShowDetails} />
-        <Stack.Screen name="Episode" component={Episode} />
-        <Stack.Screen name="Cast" component={Cast} />
-        <Stack.Screen name="Person" component={Person} />
-      </Stack.Navigator>
-    </NavigationContainer>
+  const [isAuthenticationReady, setisAuthenticationReady] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [user, setUser] = useState();
+  useEffect(() => {
+    const subscriber = firebase.auth().onAuthStateChanged(onAuthChanged);
+    return subscriber; // unsubscribe on unmount
+  }, []);
+
+  if (firebase.apps.length === 0) {
+    firebase.initializeApp(firebaseConfig);
+  }
+
+  function onAuthChanged(user) {
+    setUser(user);
+    console.log(user);
+    setisAuthenticationReady(true);
+    setIsAuthenticated(!!user);
+    if (user) {
+      console.log("mam uzytkjownika");
+    }
+  }
+
+  return user ? (
+    <AuthContext.Provider value={user}>
+      <NormalStack />
+    </AuthContext.Provider>
+  ) : (
+    <AuthStack />
   );
 }
 
