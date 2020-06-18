@@ -1,10 +1,107 @@
-import React from "react";
-import { StyleSheet, View, ActivityIndicator, ScrollView } from "react-native";
+import React, { useContext, useEffect, useState } from "react";
+import {
+  StyleSheet,
+  View,
+  ActivityIndicator,
+  ScrollView,
+  ToastAndroid,
+} from "react-native";
 import { Text, Button, Image } from "react-native-elements";
 import { Linking } from "expo";
+import Icon from "react-native-vector-icons/FontAwesome";
+import { AuthContext } from "../App";
+import * as firebase from "firebase";
+import "firebase/firestore";
 
 const ShowDetails = ({ route, navigation }) => {
+  const [data, setData] = useState("");
+
   const { show } = route.params;
+  const user = useContext(AuthContext);
+  const db = firebase.firestore();
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  useEffect(() => {}, [data]);
+
+  async function fetchData() {
+    let table = [];
+    db.collection(`users/${user.uid}/favorite`)
+      .get()
+      .then((snapshot) => {
+        snapshot.forEach((doc) => {
+          console.log(doc.id, "=>", doc.data());
+          table.push({
+            docId: doc.id,
+            id: doc.data().id,
+            name: doc.data().name,
+          });
+        });
+        setData(table);
+      })
+      .catch((err) => {
+        console.log("Error getting documents", err);
+      });
+  }
+
+  function addToFavorite() {
+    db.collection(`users/${user.uid}/favorite`)
+      .add({
+        id: show.id,
+        name: show.name,
+      })
+      .then((data) => {
+        // console.log("data", data);
+        ToastAndroid.show("Add to favorite!", ToastAndroid.SHORT);
+         fetchData();
+      })
+      .catch((error) => {
+        console.log("error", error);
+      });
+  }
+
+  function removeFromFavorite() {
+     let temp = data.find((obj) => {
+          return obj.id === show.id;
+        })
+    db.collection(`users/${user.uid}/favorite`)
+      .doc(`${temp.docId}`).delete().then((data) => {
+        // console.log("data", data);
+        ToastAndroid.show("Remove from favorite!", ToastAndroid.SHORT);
+         fetchData();
+      })
+      .catch((error) => {
+        console.log("error", error);
+      });
+  }
+
+  function renderFavoriteButton() {
+    if (data) {
+      if (
+        data.find((obj) => {
+          return obj.id === show.id;
+        })
+      ) {
+        return (
+          <Button
+            icon={<Icon name="heart-o" size={15} color="white" />}
+            title=" Remove from favorite"
+            onPress={() => removeFromFavorite()}
+          />
+        );
+      } else {
+        return (
+          <Button
+            icon={<Icon name="heart" size={15} color="white" />}
+            title=" Add to favorite"
+            onPress={() => addToFavorite()}
+          />
+        );
+      }
+    }
+  }
+
   return (
     <ScrollView
       contentInsetAdjustmentBehavior="automatic"
@@ -47,7 +144,7 @@ const ShowDetails = ({ route, navigation }) => {
           }}
         />
       ) : (
-        ""
+        <Text />
       )}
       {show.officialSite ? (
         <Button
@@ -57,7 +154,7 @@ const ShowDetails = ({ route, navigation }) => {
           }}
         />
       ) : (
-        ""
+        <Text />
       )}
       <Button
         title="Cast"
@@ -68,6 +165,7 @@ const ShowDetails = ({ route, navigation }) => {
           });
         }}
       />
+      {renderFavoriteButton()}
     </ScrollView>
   );
 };
@@ -103,7 +201,7 @@ const styles = StyleSheet.create({
     marginTop: 0,
     fontSize: 20,
     textAlign: "center",
-    textAlign:"justify"
+    textAlign: "justify",
   },
 });
 export default ShowDetails;

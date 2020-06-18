@@ -23,12 +23,8 @@ export default function App() {
 
   function onAuthChanged(user) {
     setUser(user);
-    console.log(user);
     setisAuthenticationReady(true);
     setIsAuthenticated(!!user);
-    if (user) {
-      console.log("mam uzytkjownika");
-    }
   }
 
   return user ? (

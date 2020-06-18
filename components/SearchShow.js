@@ -36,7 +36,6 @@ export const SearchShow = ({ navigation }) => {
 
 
   function renderItem(item) {
-    console.log("dupa");
     if (item) {
       return (
         <ListItem

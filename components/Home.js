@@ -13,7 +13,6 @@ export const Home = ({ navigation }) => {
   const user = useContext(AuthContext);
 
   async function logOut() {
-    console.log(user)
     try {
       await firebase.auth().signOut();
     } catch (e) {
@@ -30,7 +29,7 @@ export const Home = ({ navigation }) => {
       <Button
         icon={<Icon name="heart" size={15} color="white" />}
         title=" Favorite"
-        onPress={() => navigation.navigate("Search Show")}
+        onPress={() => navigation.navigate("Favorite")}
       />
       <Button
         icon={<Icon name="tv" size={15} color="white" />}
