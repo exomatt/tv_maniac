@@ -26,30 +26,33 @@ const Favorite = ({ route, navigation }) => {
 
   useEffect(() => {}, [data]);
 
-  useEffect(() => {
-  }, [table]);
+  useEffect(() => {}, [table]);
+
+  async function fetchShows() {
+    let shows = [];
+    for (var i = 0; i < table.length; i++) {
+      const res = await fetch(`http://api.tvmaze.com/shows/${table[i].id}`);
+      res
+        .json()
+        .then((res) => {
+          let obj = JSON.parse(JSON.stringify(res));
+          shows.push(obj);
+        })
+        .catch((err) => {
+          // setErrors(true);
+          // setIsLoading(false);
+          console.log("Error", err);
+        });
+    }
+    setData(shows);
+  }
 
   async function fetchData() {
     let table = [];
-    let shows = [];
     db.collection(`users/${user.uid}/favorite`)
       .get()
       .then((snapshot) => {
         snapshot.forEach((doc) => {
-          console.log(doc.id, "=>", doc.data());
-          fetch(`http://api.tvmaze.com/shows/${doc.data().id}`).then((res) => {
-            res
-              .json()
-              .then((res) => {
-                let obj = JSON.parse(JSON.stringify(res));
-                shows.push(obj);
-                setData(shows)
-              })
-              .catch((err) => {
-                console.log("Error", err);
-              });
-          });
-
           table.push({
             docId: doc.id,
             id: doc.data().id,
@@ -57,7 +60,6 @@ const Favorite = ({ route, navigation }) => {
           });
         });
         setTable(table);
-        setData(shows);
       })
       .catch((err) => {
         console.log("Error getting documents", err);
