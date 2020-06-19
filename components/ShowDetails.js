@@ -52,9 +52,8 @@ const ShowDetails = ({ route, navigation }) => {
         name: show.name,
       })
       .then((data) => {
-        // console.log("data", data);
         ToastAndroid.show("Add to favorite!", ToastAndroid.SHORT);
-         fetchData();
+        fetchData();
       })
       .catch((error) => {
         console.log("error", error);
@@ -62,14 +61,16 @@ const ShowDetails = ({ route, navigation }) => {
   }
 
   function removeFromFavorite() {
-     let temp = data.find((obj) => {
-          return obj.id === show.id;
-        })
+    let temp = data.find((obj) => {
+      return obj.id === show.id;
+    });
     db.collection(`users/${user.uid}/favorite`)
-      .doc(`${temp.docId}`).delete().then((data) => {
+      .doc(`${temp.docId}`)
+      .delete()
+      .then((data) => {
         // console.log("data", data);
         ToastAndroid.show("Remove from favorite!", ToastAndroid.SHORT);
-         fetchData();
+        fetchData();
       })
       .catch((error) => {
         console.log("error", error);
@@ -85,14 +86,17 @@ const ShowDetails = ({ route, navigation }) => {
       ) {
         return (
           <Button
+            buttonStyle={styles.btn}
             icon={<Icon name="heart-o" size={15} color="white" />}
             title=" Remove from favorite"
+            buttonStyle={styles.btn}
             onPress={() => removeFromFavorite()}
           />
         );
       } else {
         return (
           <Button
+            buttonStyle={styles.btn}
             icon={<Icon name="heart" size={15} color="white" />}
             title=" Add to favorite"
             onPress={() => addToFavorite()}
@@ -109,7 +113,12 @@ const ShowDetails = ({ route, navigation }) => {
     >
       <Text style={styles.text}>{show.name}</Text>
       <Text style={styles.textSmall}>{show.premiered}</Text>
-      <Text style={styles.textSmall}>Rating: {show.rating.average}</Text>
+      {show.rating ? (
+        <Text style={styles.textSmall}>Rating: {show.rating.average}</Text>
+      ) : (
+        <></>
+      )}
+
       <View
         style={{
           justifyContent: "center",
@@ -127,14 +136,19 @@ const ShowDetails = ({ route, navigation }) => {
         />
       </View>
 
-      <Text style={styles.textSmall}>Summary: </Text>
+      {show.summary ? <Text style={styles.textSmall}>Summary: </Text> : <></>}
       <Text style={styles.textSummary}>
         {show.summary ? show.summary.replace(/<[^>]*>?/gm, "") : ""}
       </Text>
       <Text style={styles.textSmall}>Status: {show.status}</Text>
-      <Text style={styles.textSmall}>Producer: {show.network.name}</Text>
+      {show.network ? (
+        <Text style={styles.textSmall}>Producer: {show.network.name}</Text>
+      ) : (
+        <></>
+      )}
       {show._links.previousepisode ? (
         <Button
+          buttonStyle={styles.btn}
           title="Last episode"
           onPress={() => {
             navigation.navigate("Episode", {
@@ -144,19 +158,21 @@ const ShowDetails = ({ route, navigation }) => {
           }}
         />
       ) : (
-        <Text />
+        <></>
       )}
       {show.officialSite ? (
         <Button
+          buttonStyle={styles.btn}
           title="Official page"
           onPress={() => {
             Linking.openURL(show.officialSite);
           }}
         />
       ) : (
-        <Text />
+        <></>
       )}
       <Button
+        buttonStyle={styles.btn}
         title="Cast"
         onPress={() => {
           navigation.navigate("Cast", {
@@ -174,6 +190,14 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#e3dcdc",
+  },
+  btn: {
+    backgroundColor: "#8F00FF",
+    padding: 15,
+    margin: 5,
+    marginTop: 30,
+    marginLeft: 10,
+    marginRight: 10,
   },
   text: {
     width: "90%",

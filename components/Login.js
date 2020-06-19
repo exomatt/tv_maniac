@@ -30,17 +30,21 @@ export const Login = ({ navigation }) => {
       />
       <Input
         value={password}
+        secureTextEntry={true}
         onChangeText={onChangePassword}
         placeholder="password"
         leftIcon={<Icon name="lock" size={24} color="black" />}
       />
       <Button
+        buttonStyle={styles.btn}
         icon={<Icon name="user" size={15} color="white" />}
         title=" Sign in"
         onPress={() => signIn()}
       />
       <Button
-        icon={<Icon name="user" size={15} color="white" />}
+        buttonStyle={styles.btnLogout}
+        titleStyle={styles.tittle}
+        icon={<Icon name="user" size={15} color="#8F00FF" />}
         title=" Create account"
         type="outline"
         onPress={() => navigation.navigate("Register")}
@@ -57,8 +61,10 @@ const styles = StyleSheet.create({
     marginRight: 10,
   },
   btn: {
+    backgroundColor: "#8F00FF",
     padding: 15,
     margin: 5,
+    marginTop: 30,
     marginLeft: 10,
     marginRight: 10,
   },
@@ -70,6 +76,17 @@ const styles = StyleSheet.create({
     marginTop: 50,
     fontSize: 40,
     textAlign: "center",
+  },
+  btnCreate: {
+    color: "#8F00FF",
+    padding: 15,
+    margin: 5,
+    marginTop: 30,
+    marginLeft: 10,
+    marginRight: 10,
+  },
+  tittle: {
+    color: "#8F00FF",
   },
 });
 
