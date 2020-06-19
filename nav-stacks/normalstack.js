@@ -9,6 +9,7 @@ import Episode from "../components/Episode";
 import Cast from "../components/Cast";
 import Person from "../components/Person";
 import Favorite from "../components/Favorite";
+import Tonight from "../components/Tonight";
 
 const Stack = createStackNavigator();
 
@@ -27,6 +28,7 @@ export default function NormalStack() {
         <Stack.Screen name="Cast" component={Cast} />
         <Stack.Screen name="Person" component={Person} />
         <Stack.Screen name="Favorite" component={Favorite} />
+        <Stack.Screen name="Tonight in TV" component={Tonight} />
       </Stack.Navigator>
     </NavigationContainer>
   );

@@ -13,59 +13,34 @@ import Icon from "react-native-vector-icons/FontAwesome";
 import { AuthContext } from "../App";
 import * as firebase from "firebase";
 import "firebase/firestore";
+import moment from "moment";
 
-const Favorite = ({ route, navigation }) => {
+const Tonight = ({ route, navigation }) => {
   const [data, setData] = useState();
-  const [table, setTable] = useState();
 
-  const user = useContext(AuthContext);
-  const db = firebase.firestore();
   useEffect(() => {
     fetchData();
   }, []);
 
   useEffect(() => {}, [data]);
 
-  useEffect(() => {fetchShows()}, [table]);
-
-  async function fetchShows() {
-    let shows = [];
-    for (var i = 0; i < table.length; i++) {
-      const res = await fetch(`http://api.tvmaze.com/shows/${table[i].id}`);
-      res
-        .json()
-        .then((res) => {
-          let obj = JSON.parse(JSON.stringify(res));
-          shows.push(obj);
-        })
-        .catch((err) => {
-          // setErrors(true);
-          // setIsLoading(false);
-          console.log("Error", err);
-        });
-    }
-    setData(shows);
-  }
-
   async function fetchData() {
-    let table = [];
-    db.collection(`users/${user.uid}/favorite`)
-      .get()
-      .then((snapshot) => {
-        snapshot.forEach((doc) => {
-          table.push({
-            docId: doc.id,
-            id: doc.data().id,
-            name: doc.data().name,
-          });
-        });
-        setTable(table);
+    const res = await fetch(
+      `http://api.tvmaze.com/schedule?country=US&date=${moment().format(
+        "YYYY-MM-DD"
+      )}`
+    );
+    res
+      .json()
+      .then((res) => {
+        let obj = JSON.parse(JSON.stringify(res));
+        // console.log(obj);
+        setData(obj);
       })
       .catch((err) => {
-        console.log("Error getting documents", err);
+        console.log("Error", err);
       });
   }
-
   function renderItem(item) {
     console.log(item);
     return (
@@ -97,7 +72,7 @@ const Favorite = ({ route, navigation }) => {
       <FlatList
         data={data}
         keyExtractor={(item) => item.id}
-        renderItem={(item) => renderItem(item.item)}
+        renderItem={(item) => renderItem(item.item.show)}
       />
     </ScrollView>
   );
@@ -137,4 +112,4 @@ const styles = StyleSheet.create({
     textAlign: "justify",
   },
 });
-export default Favorite;
+export default Tonight;

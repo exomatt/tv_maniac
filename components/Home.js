@@ -34,7 +34,7 @@ export const Home = ({ navigation }) => {
       <Button
         icon={<Icon name="tv" size={15} color="white" />}
         title=" Tonight in TV"
-        onPress={() => navigation.navigate("Search Show")}
+        onPress={() => navigation.navigate("Tonight in TV")}
       />
       <Button
         icon={<Icon name="random" size={15} color="white" />}
